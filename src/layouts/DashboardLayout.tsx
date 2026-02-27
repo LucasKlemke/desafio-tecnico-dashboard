@@ -1,11 +1,12 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { LayoutDashboard, Package, User, LogOut } from 'lucide-react'
+import { LayoutDashboard, Package, Tag, User, LogOut } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/dashboard/products', label: 'Produtos', icon: Package, end: false },
+  { to: '/dashboard/categories', label: 'Categorias', icon: Tag, end: false },
   { to: '/dashboard/profile', label: 'Perfil', icon: User, end: false },
 ]
 

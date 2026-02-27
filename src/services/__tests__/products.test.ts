@@ -12,7 +12,7 @@ const mockProduct = {
   id: '1',
   name: 'iPhone 15 Pro',
   price: 7999.9,
-  category: 'Eletrônicos',
+  categoryId: '1' as string | null,
   stock: 10,
 }
 
@@ -58,7 +58,7 @@ describe('getProducts', () => {
 })
 
 describe('createProduct', () => {
-  const input = { name: 'Novo', price: 100, category: 'Cat', stock: 5 }
+  const input = { name: 'Novo', price: 100, categoryId: '1' as string | null, stock: 5 }
 
   it('retorna o produto criado', async () => {
     mockFetch({ id: '99', ...input })
@@ -90,7 +90,7 @@ describe('createProduct', () => {
 })
 
 describe('updateProduct', () => {
-  const input = { name: 'Editado', price: 200, category: 'Cat', stock: 3 }
+  const input = { name: 'Editado', price: 200, categoryId: '2' as string | null, stock: 3 }
 
   it('retorna o produto atualizado', async () => {
     mockFetch({ id: '1', ...input })

@@ -17,12 +17,14 @@ import {
   updateProduct,
   deleteProduct,
 } from '@/services/products'
+import { type Category, getCategories } from '@/services/categories'
 
-const EMPTY_FORM: ProductInput = { name: '', price: 0, category: '', stock: 0 }
+const EMPTY_FORM: ProductInput = { name: '', price: 0, categoryId: null, stock: 0 }
 
 export function ProductsPage() {
   const { token } = useAuth()
   const [products, setProducts] = useState<Product[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -36,20 +38,25 @@ export function ProductsPage() {
 
   useEffect(() => {
     if (!token) return
-    void loadProducts()
+    void load()
   }, [token])
 
-  async function loadProducts() {
+  async function load() {
     setLoading(true)
     try {
-      const data = await getProducts(token!)
-      setProducts(data)
+      const [prods, cats] = await Promise.all([getProducts(token!), getCategories(token!)])
+      setProducts(prods)
+      setCategories(cats)
       setError(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro desconhecido')
     } finally {
       setLoading(false)
     }
+  }
+
+  function getCategoryById(id: string | null) {
+    return categories.find((c) => c.id === id) ?? null
   }
 
   function openCreate() {
@@ -60,7 +67,12 @@ export function ProductsPage() {
 
   function openEdit(product: Product) {
     setEditing(product)
-    setForm({ name: product.name, price: product.price, category: product.category, stock: product.stock })
+    setForm({
+      name: product.name,
+      price: product.price,
+      categoryId: product.categoryId,
+      stock: product.stock,
+    })
     setFormOpen(true)
   }
 
@@ -131,37 +143,49 @@ export function ProductsPage() {
               </tr>
             </thead>
             <tbody>
-              {products.map((product) => (
-                <tr key={product.id} className="border-b last:border-0">
-                  <td className="px-4 py-3">{product.id}</td>
-                  <td className="px-4 py-3 font-medium">{product.name}</td>
-                  <td className="px-4 py-3">
-                    {product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                  </td>
-                  <td className="px-4 py-3">{product.category}</td>
-                  <td className="px-4 py-3">{product.stock}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label={`Editar ${product.name}`}
-                        onClick={() => openEdit(product)}
-                      >
-                        <Pencil className="size-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label={`Deletar ${product.name}`}
-                        onClick={() => setDeleteTarget(product)}
-                      >
-                        <Trash2 className="size-4 text-destructive" />
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {products.map((product) => {
+                const cat = getCategoryById(product.categoryId)
+                return (
+                  <tr key={product.id} className="border-b last:border-0">
+                    <td className="px-4 py-3">{product.id}</td>
+                    <td className="px-4 py-3 font-medium">{product.name}</td>
+                    <td className="px-4 py-3">
+                      {product.price.toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                      })}
+                    </td>
+                    <td className="px-4 py-3">
+                      {cat ? (
+                        <CategoryBadge name={cat.name} color={cat.color} />
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">{product.stock}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={`Editar ${product.name}`}
+                          onClick={() => openEdit(product)}
+                        >
+                          <Pencil className="size-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={`Deletar ${product.name}`}
+                          onClick={() => setDeleteTarget(product)}
+                        >
+                          <Trash2 className="size-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
@@ -169,7 +193,7 @@ export function ProductsPage() {
 
       {/* Create / Edit dialog */}
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent>
+        <DialogContent aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{editing ? 'Editar Produto' : 'Novo Produto'}</DialogTitle>
           </DialogHeader>
@@ -196,13 +220,21 @@ export function ProductsPage() {
               />
             </Field>
             <Field label="Categoria">
-              <input
+              <select
                 data-testid="field-category"
                 className="input"
-                value={form.category}
-                onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-                placeholder="Ex: Eletrônicos"
-              />
+                value={form.categoryId ?? ''}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, categoryId: e.target.value || null }))
+                }
+              >
+                <option value="">Sem categoria</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
             </Field>
             <Field label="Estoque">
               <input
@@ -228,13 +260,17 @@ export function ProductsPage() {
       </Dialog>
 
       {/* Delete confirmation dialog */}
-      <Dialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null) }}>
-        <DialogContent>
+      <Dialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => { if (!open) setDeleteTarget(null) }}
+      >
+        <DialogContent aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>Confirmar exclusão</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Tem certeza que deseja excluir <strong>{deleteTarget?.name}</strong>? Esta ação não pode ser desfeita.
+            Tem certeza que deseja excluir <strong>{deleteTarget?.name}</strong>? Esta ação não
+            pode ser desfeita.
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteTarget(null)}>
@@ -251,6 +287,15 @@ export function ProductsPage() {
         </DialogContent>
       </Dialog>
     </div>
+  )
+}
+
+function CategoryBadge({ name, color }: { name: string; color: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset ring-black/10">
+      <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: color }} />
+      {name}
+    </span>
   )
 }
 

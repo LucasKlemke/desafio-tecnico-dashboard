@@ -3,23 +3,34 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ProductsPage } from '../ProductsPage'
 import * as productsService from '@/services/products'
+import * as categoriesService from '@/services/categories'
 
 vi.mock('@/contexts/AuthContext', () => ({
   useAuth: () => ({ token: 'test-token', user: { id: '1', name: 'Teste', email: 'a@a.com' } }),
 }))
 
+const mockCategories = [
+  { id: '1', name: 'Eletrônicos', color: '#3b82f6' },
+  { id: '2', name: 'Informática', color: '#8b5cf6' },
+]
+
 const mockProducts = [
-  { id: '1', name: 'iPhone 15 Pro', price: 7999.9, category: 'Eletrônicos', stock: 10 },
-  { id: '2', name: 'MacBook Air M2', price: 10500, category: 'Informática', stock: 5 },
+  { id: '1', name: 'iPhone 15 Pro', price: 7999.9, categoryId: '1', stock: 10 },
+  { id: '2', name: 'MacBook Air M2', price: 10500, categoryId: '2', stock: 5 },
 ]
 
 beforeEach(() => {
   vi.restoreAllMocks()
 })
 
+function setupDefaultMocks() {
+  vi.spyOn(productsService, 'getProducts').mockResolvedValue(mockProducts)
+  vi.spyOn(categoriesService, 'getCategories').mockResolvedValue(mockCategories)
+}
+
 describe('ProductsPage', () => {
   it('exibe estado de carregamento inicialmente', () => {
-    vi.spyOn(productsService, 'getProducts').mockResolvedValue([])
+    setupDefaultMocks()
 
     render(<ProductsPage />)
 
@@ -27,7 +38,7 @@ describe('ProductsPage', () => {
   })
 
   it('renderiza a tabela com os produtos', async () => {
-    vi.spyOn(productsService, 'getProducts').mockResolvedValue(mockProducts)
+    setupDefaultMocks()
 
     render(<ProductsPage />)
 
@@ -37,8 +48,21 @@ describe('ProductsPage', () => {
     })
   })
 
+  it('exibe o nome da categoria na tabela', async () => {
+    setupDefaultMocks()
+
+    render(<ProductsPage />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Eletrônicos')).toBeInTheDocument()
+    })
+  })
+
   it('exibe mensagem de erro quando getProducts falha', async () => {
-    vi.spyOn(productsService, 'getProducts').mockRejectedValue(new Error('Erro ao carregar produtos'))
+    vi.spyOn(productsService, 'getProducts').mockRejectedValue(
+      new Error('Erro ao carregar produtos'),
+    )
+    vi.spyOn(categoriesService, 'getCategories').mockResolvedValue([])
 
     render(<ProductsPage />)
 
@@ -48,7 +72,7 @@ describe('ProductsPage', () => {
   })
 
   it('abre o modal ao clicar em "Novo Produto"', async () => {
-    vi.spyOn(productsService, 'getProducts').mockResolvedValue(mockProducts)
+    setupDefaultMocks()
     const user = userEvent.setup()
 
     render(<ProductsPage />)
@@ -61,10 +85,8 @@ describe('ProductsPage', () => {
     expect(screen.getByTestId('field-name')).toBeInTheDocument()
   })
 
-  it('cria um novo produto e o exibe na tabela', async () => {
-    vi.spyOn(productsService, 'getProducts').mockResolvedValue(mockProducts)
-    const newProduct = { id: '99', name: 'Dell XPS', price: 12000, category: 'Informática', stock: 3 }
-    vi.spyOn(productsService, 'createProduct').mockResolvedValue(newProduct)
+  it('o dropdown de categorias exibe as categorias disponíveis', async () => {
+    setupDefaultMocks()
     const user = userEvent.setup()
 
     render(<ProductsPage />)
@@ -73,15 +95,29 @@ describe('ProductsPage', () => {
 
     await user.click(screen.getByRole('button', { name: /novo produto/i }))
 
+    const select = screen.getByTestId('field-category') as HTMLSelectElement
+    expect(select.options).toHaveLength(3) // "Sem categoria" + 2 categorias
+    expect(select.options[1].text).toBe('Eletrônicos')
+    expect(select.options[2].text).toBe('Informática')
+  })
+
+  it('cria um novo produto e o exibe na tabela', async () => {
+    setupDefaultMocks()
+    const newProduct = { id: '99', name: 'Dell XPS', price: 12000, categoryId: '2', stock: 3 }
+    vi.spyOn(productsService, 'createProduct').mockResolvedValue(newProduct)
+    const user = userEvent.setup()
+
+    render(<ProductsPage />)
+
+    await waitFor(() => screen.getByText('iPhone 15 Pro'))
+
+    await user.click(screen.getByRole('button', { name: /novo produto/i }))
     await user.clear(screen.getByTestId('field-name'))
     await user.type(screen.getByTestId('field-name'), 'Dell XPS')
     await user.clear(screen.getByTestId('field-price'))
     await user.type(screen.getByTestId('field-price'), '12000')
-    await user.clear(screen.getByTestId('field-category'))
-    await user.type(screen.getByTestId('field-category'), 'Informática')
     await user.clear(screen.getByTestId('field-stock'))
     await user.type(screen.getByTestId('field-stock'), '3')
-
     await user.click(screen.getByRole('button', { name: /^salvar$/i }))
 
     await waitFor(() => {
@@ -90,7 +126,7 @@ describe('ProductsPage', () => {
   })
 
   it('abre o modal de edição com os dados do produto preenchidos', async () => {
-    vi.spyOn(productsService, 'getProducts').mockResolvedValue(mockProducts)
+    setupDefaultMocks()
     const user = userEvent.setup()
 
     render(<ProductsPage />)
@@ -100,11 +136,11 @@ describe('ProductsPage', () => {
     await user.click(screen.getByRole('button', { name: /editar iphone 15 pro/i }))
 
     expect((screen.getByTestId('field-name') as HTMLInputElement).value).toBe('iPhone 15 Pro')
-    expect((screen.getByTestId('field-category') as HTMLInputElement).value).toBe('Eletrônicos')
+    expect((screen.getByTestId('field-category') as HTMLSelectElement).value).toBe('1')
   })
 
   it('atualiza o produto na tabela após edição', async () => {
-    vi.spyOn(productsService, 'getProducts').mockResolvedValue(mockProducts)
+    setupDefaultMocks()
     const updated = { ...mockProducts[0], name: 'iPhone 16 Pro' }
     vi.spyOn(productsService, 'updateProduct').mockResolvedValue(updated)
     const user = userEvent.setup()
@@ -114,10 +150,8 @@ describe('ProductsPage', () => {
     await waitFor(() => screen.getByText('iPhone 15 Pro'))
 
     await user.click(screen.getByRole('button', { name: /editar iphone 15 pro/i }))
-
     await user.clear(screen.getByTestId('field-name'))
     await user.type(screen.getByTestId('field-name'), 'iPhone 16 Pro')
-
     await user.click(screen.getByRole('button', { name: /^salvar$/i }))
 
     await waitFor(() => {
@@ -127,7 +161,7 @@ describe('ProductsPage', () => {
   })
 
   it('remove o produto da tabela após exclusão confirmada', async () => {
-    vi.spyOn(productsService, 'getProducts').mockResolvedValue(mockProducts)
+    setupDefaultMocks()
     vi.spyOn(productsService, 'deleteProduct').mockResolvedValue()
     const user = userEvent.setup()
 
@@ -144,7 +178,7 @@ describe('ProductsPage', () => {
   })
 
   it('mantém o produto na tabela ao cancelar exclusão', async () => {
-    vi.spyOn(productsService, 'getProducts').mockResolvedValue(mockProducts)
+    setupDefaultMocks()
     const user = userEvent.setup()
 
     render(<ProductsPage />)

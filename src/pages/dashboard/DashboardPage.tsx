@@ -1,47 +1,43 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-
-const API_URL = 'http://localhost:3001'
-
-type Product = {
-  id: string
-  name: string
-  price: number
-  category: string
-  stock: number
-}
+import { getProducts } from '@/services/products'
+import { getCategories } from '@/services/categories'
 
 export function DashboardPage() {
   const { user, token } = useAuth()
-  const [products, setProducts] = useState<Product[]>([])
+  const [totalProducts, setTotalProducts] = useState<number | null>(null)
+  const [totalCategories, setTotalCategories] = useState<number | null>(null)
+  const [totalStock, setTotalStock] = useState<number | null>(null)
+  const [avgPrice, setAvgPrice] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch(`${API_URL}/products`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((data) => setProducts(data as Product[]))
+    if (!token) return
+    Promise.all([getProducts(token), getCategories(token)])
+      .then(([products, categories]) => {
+        setTotalProducts(products.length)
+        setTotalCategories(categories.length)
+        setTotalStock(products.reduce((sum, p) => sum + p.stock, 0))
+        setAvgPrice(
+          products.length > 0
+            ? products.reduce((sum, p) => sum + p.price, 0) / products.length
+            : 0,
+        )
+      })
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [token])
 
-  const totalStock = products.reduce((sum, p) => sum + p.stock, 0)
-  const categories = new Set(products.map((p) => p.category)).size
-  const avgPrice =
-    products.length > 0
-      ? products.reduce((sum, p) => sum + p.price, 0) / products.length
-      : 0
-
   const stats = [
-    { label: 'Total de Produtos', value: loading ? '—' : products.length },
-    { label: 'Categorias', value: loading ? '—' : categories },
+    { label: 'Total de Produtos', value: loading ? '—' : totalProducts },
+    { label: 'Categorias', value: loading ? '—' : totalCategories },
     { label: 'Itens em Estoque', value: loading ? '—' : totalStock },
     {
       label: 'Preço Médio',
-      value: loading
-        ? '—'
-        : avgPrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+      value:
+        loading || avgPrice === null
+          ? '—'
+          : avgPrice.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
     },
   ]
 

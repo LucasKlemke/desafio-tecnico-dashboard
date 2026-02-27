@@ -4,7 +4,7 @@ export type Product = {
   id: string
   name: string
   price: number
-  category: string
+  categoryId: string | null
   stock: number
 }
 
@@ -42,6 +42,20 @@ export async function updateProduct(
 ): Promise<Product> {
   const res = await fetch(`${API_URL}/products/${id}`, {
     method: 'PUT',
+    headers: authHeaders(token),
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) throw new Error('Erro ao atualizar produto')
+  return res.json() as Promise<Product>
+}
+
+export async function patchProduct(
+  token: string,
+  id: string,
+  data: Partial<ProductInput>,
+): Promise<Product> {
+  const res = await fetch(`${API_URL}/products/${id}`, {
+    method: 'PATCH',
     headers: authHeaders(token),
     body: JSON.stringify(data),
   })
