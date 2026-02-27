@@ -14,7 +14,7 @@ export function DashboardLayout() {
   const { user, logout } = useAuth()
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen">
       <aside className="flex w-56 flex-col border-r bg-card">
         <div className="border-b px-4 py-5">
           <p className="text-sm font-semibold">Dashboard</p>
@@ -53,7 +53,7 @@ export function DashboardLayout() {
         </nav>
       </aside>
 
-      <main className="flex-1 overflow-auto p-8">
+      <main className="flex-1 overflow-scroll p-8">
         <Outlet />
       </main>
     </div>

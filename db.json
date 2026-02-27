@@ -17,6 +17,11 @@
       "id": "2",
       "name": "Informática",
       "color": "#8b5cf6"
+    },
+    {
+      "name": "Alimentacao",
+      "color": "#10b14e",
+      "id": "MBDovWw"
     }
   ],
   "products": [
@@ -40,6 +45,13 @@
       "price": 12000,
       "categoryId": "2",
       "stock": 5
+    },
+    {
+      "name": "Abacate",
+      "price": 10,
+      "categoryId": "MBDovWw",
+      "stock": 50,
+      "id": "pd1q4Jd"
     }
   ]
 }
