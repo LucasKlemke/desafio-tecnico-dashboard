@@ -124,6 +124,18 @@ export function ProductsPage() {
       )}
 
       {!loading && !error && (
+        products.length === 0 ? (
+          <div className="rounded-md border border-dashed bg-muted/30 py-12 text-center">
+            <p className="text-muted-foreground">Você ainda não possui nenhum produto.</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Clique em &quot;Novo Produto&quot; para adicionar o primeiro.
+            </p>
+            <Button onClick={openCreate} size="sm" className="mt-4">
+              <Plus className="mr-2 size-4" />
+              Novo Produto
+            </Button>
+          </div>
+        ) : (
         <div className="overflow-x-auto rounded-md border">
           <table className="w-full text-left text-sm">
             <thead>
@@ -183,6 +195,7 @@ export function ProductsPage() {
             </tbody>
           </table>
         </div>
+        )
       )}
 
       {/* Create / Edit dialog */}

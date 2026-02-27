@@ -136,6 +136,8 @@ export function DashboardPage() {
 
   if (loading) return <div className="p-8 text-center">Carregando dashboard...</div>
 
+  const hasData = stats.products > 0
+
   return (
     <div className="flex flex-col gap-8">
       <div>
@@ -143,6 +145,17 @@ export function DashboardPage() {
         <p className="text-muted-foreground">Visão geral do seu inventário de {user?.name}.</p>
       </div>
 
+      {!hasData ? (
+        <div className="rounded-lg border border-dashed bg-muted/30 py-16 text-center">
+          <p className="text-muted-foreground">
+            Você ainda não possui dados para visualizar aqui.
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">
+            Comece cadastrando categorias em <strong>Categorias</strong> e depois adicione produtos em <strong>Produtos</strong>. Os gráficos e resumos serão exibidos automaticamente.
+          </p>
+        </div>
+      ) : (
+        <>
       {/* Cards de Resumo */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <Card>
@@ -263,6 +276,8 @@ export function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+        </>
+      )}
     </div>
   )
 }

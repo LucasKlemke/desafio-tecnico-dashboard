@@ -126,6 +126,18 @@ export function CategoriesPage() {
       )}
 
       {!loading && !error && (
+        categories.length === 0 ? (
+          <div className="rounded-md border border-dashed bg-muted/30 py-12 text-center">
+            <p className="text-muted-foreground">Você ainda não possui nenhuma categoria.</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Clique em &quot;Nova Categoria&quot; para adicionar a primeira.
+            </p>
+            <Button onClick={openCreate} size="sm" className="mt-4">
+              <Plus className="mr-2 size-4" />
+              Nova Categoria
+            </Button>
+          </div>
+        ) : (
         <div className="overflow-x-auto rounded-md border">
           <table className="w-full text-left text-sm">
             <thead>
@@ -178,6 +190,7 @@ export function CategoriesPage() {
             </tbody>
           </table>
         </div>
+        )
       )}
 
       {/* Create / Edit dialog */}
