@@ -1,9 +1,12 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
+import { DashboardLayout } from '@/layouts/DashboardLayout'
 import { LoginPage } from '@/pages/LoginPage'
 import { RegisterPage } from '@/pages/RegisterPage'
+import { DashboardPage } from '@/pages/dashboard/DashboardPage'
 import { ProductsPage } from '@/pages/dashboard/ProductsPage'
+import { ProfilePage } from '@/pages/dashboard/ProfilePage'
 
 function AppRoutes() {
   return (
@@ -13,8 +16,11 @@ function AppRoutes() {
       <Route path="/register" element={<RegisterPage />} />
 
       <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard" element={<Navigate to="/dashboard/products" replace />} />
-        <Route path="/dashboard/products" element={<ProductsPage />} />
+        <Route element={<DashboardLayout />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/dashboard/products" element={<ProductsPage />} />
+          <Route path="/dashboard/profile" element={<ProfilePage />} />
+        </Route>
       </Route>
 
       <Route path="*" element={<Navigate to="/login" replace />} />
