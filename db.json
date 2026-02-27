@@ -1,33 +1,188 @@
 {
   "users": [
     {
+      "id": "1772202196547",
+      "name": "Lucas Klemke",
+      "email": "lucas.klemke84@gmail.com",
+      "password": "$2b$10$IeJtrbROI8puiCNRt2ApX.XGH8Pz98Lpa7Ul/cBxF.cc2pMKbrmeS"
+    },
+    {
+      "id": "1772208705539",
+      "name": "Mario Gomes",
+      "email": "marigogomes@gmail.com",
+      "password": "$2b$10$Z/dp6Dn7QYAen2W3G5oLqe3HQcHpkXQtx0O8pqsWG3u1bdt.L6QCW"
+    },
+    {
+      "id": "1772209213538hrcuu",
+      "name": "Mario Gamer",
+      "email": "mariogamer@gmail.com",
+      "password": "$2b$10$dmg4roI7q6JSgw3ySditvOkjuu25cDTjXLnSFVyJWMSLTbqCL9T1O"
+    }
+  ],
+  "categories": [
+    {
       "id": "1",
-      "email": "admin@sps.com",
-      "password": "admin",
-      "name": "Administrador"
+      "name": "Eletrônicos",
+      "color": "#ef4444",
+      "userId": "1772202196547"
+    },
+    {
+      "id": "2",
+      "name": "Informática",
+      "color": "#8b5cf6",
+      "userId": "1772202196547"
+    },
+    {
+      "id": "MBDovWw",
+      "name": "Alimentação",
+      "color": "#10b14e",
+      "userId": "1772202196547"
+    },
+    {
+      "id": "cat_demo_3",
+      "name": "Casa Inteligente",
+      "color": "#0ea5e9",
+      "userId": "1772202196547"
+    },
+    {
+      "id": "cat_demo_4",
+      "name": "Áudio & Som",
+      "color": "#f59e0b",
+      "userId": "1772202196547"
+    },
+    {
+      "id": "cat_demo_5",
+      "name": "Gaming",
+      "color": "#ec4899",
+      "userId": "1772202196547"
+    },
+    {
+      "name": "Corrida",
+      "color": "#6366f1",
+      "userId": "1772209213538hrcuu",
+      "id": "1772209444068gp5fj"
     }
   ],
   "products": [
     {
       "id": "1",
-      "name": "iPhone 15 Pro",
-      "price": 7999.90,
-      "category": "Eletrônicos",
-      "stock": 10
+      "name": "iPhone 15 Pro 128GB",
+      "price": 7299,
+      "categoryId": "1",
+      "stock": 8,
+      "userId": "1772202196547"
     },
     {
       "id": "2",
-      "name": "MacBook Air M2",
-      "price": 10500.00,
-      "category": "Informática",
-      "stock": 5
+      "name": "MacBook Air M2 13\"",
+      "price": 9800,
+      "categoryId": "2",
+      "stock": 4,
+      "userId": "1772202196547"
     },
-      {
+    {
       "id": "3",
-      "name": "Dell XPS 13",
-      "price": 12000.00,
-      "category": "Informática",
-      "stock": 5
+      "name": "Dell XPS 13 Plus",
+      "price": 11500,
+      "categoryId": "2",
+      "stock": 3,
+      "userId": "1772202196547"
+    },
+    {
+      "id": "pd1q4Jd",
+      "name": "Abacate Hass (Kg)",
+      "price": 12.5,
+      "categoryId": "MBDovWw",
+      "stock": 45,
+      "userId": "1772202196547"
+    },
+    {
+      "id": "demo_p1",
+      "name": "Monitor Gamer 144Hz 27\"",
+      "price": 1850,
+      "categoryId": "cat_demo_5",
+      "stock": 12,
+      "userId": "1772202196547"
+    },
+    {
+      "id": "demo_p2",
+      "name": "Echo Dot 5ª Geração",
+      "price": 429,
+      "categoryId": "cat_demo_3",
+      "stock": 25,
+      "userId": "1772202196547"
+    },
+    {
+      "id": "demo_p3",
+      "name": "Lâmpada Inteligente Wi-Fi",
+      "price": 79.9,
+      "categoryId": "cat_demo_3",
+      "stock": 100,
+      "userId": "1772202196547"
+    },
+    {
+      "id": "demo_p4",
+      "name": "Headset HyperX Cloud II",
+      "price": 549,
+      "categoryId": "cat_demo_4",
+      "stock": 15,
+      "userId": "1772202196547"
+    },
+    {
+      "id": "demo_p5",
+      "name": "Mouse Sem Fio Logitech MX Master 3S",
+      "price": 620,
+      "categoryId": "2",
+      "stock": 10,
+      "userId": "1772202196547"
+    },
+    {
+      "id": "demo_p6",
+      "name": "PlayStation 5 Slim",
+      "price": 3750,
+      "categoryId": "cat_demo_5",
+      "stock": 6,
+      "userId": "1772202196547"
+    },
+    {
+      "id": "demo_p7",
+      "name": "Caixa de Som JBL Flip 6",
+      "price": 699,
+      "categoryId": "cat_demo_4",
+      "stock": 20,
+      "userId": "1772202196547"
+    },
+    {
+      "id": "demo_p8",
+      "name": "iPad Air M1 64GB",
+      "price": 4800,
+      "categoryId": "1",
+      "stock": 5,
+      "userId": "1772202196547"
+    },
+    {
+      "id": "demo_p9",
+      "name": "Arroz Tipo 1 (5kg)",
+      "price": 28.9,
+      "categoryId": "MBDovWw",
+      "stock": 80,
+      "userId": "1772202196547"
+    },
+    {
+      "id": "demo_p10",
+      "name": "Teclado Mecânico RGB",
+      "price": 320,
+      "categoryId": "cat_demo_5",
+      "stock": 18,
+      "userId": "1772202196547"
+    },
+    {
+      "name": "Carbo Gel",
+      "price": 8,
+      "categoryId": "1772209444068gp5fj",
+      "stock": 100,
+      "userId": "1772209213538hrcuu",
+      "id": "1772209462455y9l8r"
     }
   ]
 }
