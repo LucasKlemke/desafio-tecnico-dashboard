@@ -2,13 +2,7 @@ import { useEffect, useState } from 'react'
 import { Pencil, Trash2, Plus } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
+import { ResponsiveDialog } from '@/components/ui/responsive-dialog'
 import {
   type Product,
   type ProductInput,
@@ -130,7 +124,7 @@ export function ProductsPage() {
       )}
 
       {!loading && !error && (
-        <div className="rounded-md border">
+        <div className="overflow-x-auto rounded-md border">
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b bg-muted/50">
@@ -192,87 +186,79 @@ export function ProductsPage() {
       )}
 
       {/* Create / Edit dialog */}
-      <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent aria-describedby={undefined}>
-          <DialogHeader>
-            <DialogTitle>{editing ? 'Editar Produto' : 'Novo Produto'}</DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-4 py-2">
-            <Field label="Nome">
-              <input
-                data-testid="field-name"
-                className="input"
-                value={form.name}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                placeholder="Nome do produto"
-              />
-            </Field>
-            <Field label="Preço">
-              <input
-                data-testid="field-price"
-                className="input"
-                type="number"
-                min={0}
-                step={0.01}
-                value={form.price}
-                onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))}
-              />
-            </Field>
-            <Field label="Categoria">
-              <select
-                data-testid="field-category"
-                className="input"
-                value={form.categoryId ?? ''}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, categoryId: e.target.value || null }))
-                }
-              >
-                <option value="">Sem categoria</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field label="Estoque">
-              <input
-                data-testid="field-stock"
-                className="input"
-                type="number"
-                min={0}
-                value={form.stock}
-                onChange={(e) => setForm((f) => ({ ...f, stock: Number(e.target.value) }))}
-              />
-            </Field>
-          </div>
-
-          <DialogFooter>
+      <ResponsiveDialog
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        title={editing ? 'Editar Produto' : 'Novo Produto'}
+        footer={
+          <>
             <Button variant="outline" onClick={() => setFormOpen(false)}>
               Cancelar
             </Button>
             <Button onClick={() => { void handleSave() }} disabled={saving || !form.name}>
               {saving ? 'Salvando...' : 'Salvar'}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </>
+        }
+      >
+        <div className="space-y-4 py-2">
+          <Field label="Nome">
+            <input
+              data-testid="field-name"
+              className="input"
+              value={form.name}
+              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              placeholder="Nome do produto"
+            />
+          </Field>
+          <Field label="Preço">
+            <input
+              data-testid="field-price"
+              className="input"
+              type="number"
+              min={0}
+              step={0.01}
+              value={form.price}
+              onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))}
+            />
+          </Field>
+          <Field label="Categoria">
+            <select
+              data-testid="field-category"
+              className="input"
+              value={form.categoryId ?? ''}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, categoryId: e.target.value || null }))
+              }
+            >
+              <option value="">Sem categoria</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Estoque">
+            <input
+              data-testid="field-stock"
+              className="input"
+              type="number"
+              min={0}
+              value={form.stock}
+              onChange={(e) => setForm((f) => ({ ...f, stock: Number(e.target.value) }))}
+            />
+          </Field>
+        </div>
+      </ResponsiveDialog>
 
       {/* Delete confirmation dialog */}
-      <Dialog
+      <ResponsiveDialog
         open={!!deleteTarget}
         onOpenChange={(open) => { if (!open) setDeleteTarget(null) }}
-      >
-        <DialogContent aria-describedby={undefined}>
-          <DialogHeader>
-            <DialogTitle>Confirmar exclusão</DialogTitle>
-          </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            Tem certeza que deseja excluir <strong>{deleteTarget?.name}</strong>? Esta ação não
-            pode ser desfeita.
-          </p>
-          <DialogFooter>
+        title="Confirmar exclusão"
+        footer={
+          <>
             <Button variant="outline" onClick={() => setDeleteTarget(null)}>
               Cancelar
             </Button>
@@ -283,9 +269,14 @@ export function ProductsPage() {
             >
               {deleting ? 'Excluindo...' : 'Excluir'}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </>
+        }
+      >
+        <p className="py-2 text-sm text-muted-foreground">
+          Tem certeza que deseja excluir <strong>{deleteTarget?.name}</strong>? Esta ação não
+          pode ser desfeita.
+        </p>
+      </ResponsiveDialog>
     </div>
   )
 }

@@ -2,13 +2,7 @@ import { useEffect, useState } from 'react'
 import { Pencil, Trash2, Plus } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
+import { ResponsiveDialog } from '@/components/ui/responsive-dialog'
 import {
   type Category,
   type CategoryInput,
@@ -132,7 +126,7 @@ export function CategoriesPage() {
       )}
 
       {!loading && !error && (
-        <div className="rounded-md border">
+        <div className="overflow-x-auto rounded-md border">
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b bg-muted/50">
@@ -187,39 +181,12 @@ export function CategoriesPage() {
       )}
 
       {/* Create / Edit dialog */}
-      <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent aria-describedby={undefined}>
-          <DialogHeader>
-            <DialogTitle>{editing ? 'Editar Categoria' : 'Nova Categoria'}</DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-4 py-2">
-            <div className="space-y-1">
-              <label className="text-sm font-medium">Nome</label>
-              <input
-                data-testid="field-cat-name"
-                className="input"
-                value={form.name}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                placeholder="Nome da categoria"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-sm font-medium">Cor</label>
-              <div className="flex items-center gap-3">
-                <input
-                  data-testid="field-cat-color"
-                  type="color"
-                  value={form.color}
-                  onChange={(e) => setForm((f) => ({ ...f, color: e.target.value }))}
-                  className="h-9 w-14 cursor-pointer rounded-md border bg-background p-1"
-                />
-                <span className="font-mono text-sm text-muted-foreground">{form.color}</span>
-              </div>
-            </div>
-          </div>
-
-          <DialogFooter>
+      <ResponsiveDialog
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        title={editing ? 'Editar Categoria' : 'Nova Categoria'}
+        footer={
+          <>
             <Button variant="outline" onClick={() => setFormOpen(false)}>
               Cancelar
             </Button>
@@ -229,42 +196,43 @@ export function CategoriesPage() {
             >
               {saving ? 'Salvando...' : 'Salvar'}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </>
+        }
+      >
+        <div className="space-y-4 py-2">
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Nome</label>
+            <input
+              data-testid="field-cat-name"
+              className="input"
+              value={form.name}
+              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              placeholder="Nome da categoria"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-sm font-medium">Cor</label>
+            <div className="flex items-center gap-3">
+              <input
+                data-testid="field-cat-color"
+                type="color"
+                value={form.color}
+                onChange={(e) => setForm((f) => ({ ...f, color: e.target.value }))}
+                className="h-9 w-14 cursor-pointer rounded-md border bg-background p-1"
+              />
+              <span className="font-mono text-sm text-muted-foreground">{form.color}</span>
+            </div>
+          </div>
+        </div>
+      </ResponsiveDialog>
 
       {/* Delete confirmation dialog */}
-      <Dialog
+      <ResponsiveDialog
         open={!!deleteTarget}
         onOpenChange={(open) => { if (!open) setDeleteTarget(null) }}
-      >
-        <DialogContent aria-describedby={undefined}>
-          <DialogHeader>
-            <DialogTitle>Confirmar exclusão</DialogTitle>
-          </DialogHeader>
-
-          {deleteTarget && (() => {
-            const count = productCountFor(deleteTarget.id)
-            return (
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <p>
-                  Tem certeza que deseja excluir a categoria{' '}
-                  <strong className="text-foreground">{deleteTarget.name}</strong>?
-                </p>
-                {count > 0 && (
-                  <p
-                    className="rounded-md bg-destructive/10 px-3 py-2 text-destructive"
-                    data-testid="delete-warning"
-                  >
-                    {count} {count === 1 ? 'produto ficará' : 'produtos ficarão'} sem categoria
-                    após essa exclusão.
-                  </p>
-                )}
-              </div>
-            )
-          })()}
-
-          <DialogFooter>
+        title="Confirmar exclusão"
+        footer={
+          <>
             <Button variant="outline" onClick={() => setDeleteTarget(null)}>
               Cancelar
             </Button>
@@ -275,9 +243,30 @@ export function CategoriesPage() {
             >
               {deleting ? 'Excluindo...' : 'Excluir'}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </>
+        }
+      >
+        {deleteTarget && (() => {
+          const count = productCountFor(deleteTarget.id)
+          return (
+            <div className="space-y-2 py-2 text-sm text-muted-foreground">
+              <p>
+                Tem certeza que deseja excluir a categoria{' '}
+                <strong className="text-foreground">{deleteTarget.name}</strong>?
+              </p>
+              {count > 0 && (
+                <p
+                  className="rounded-md bg-destructive/10 px-3 py-2 text-destructive"
+                  data-testid="delete-warning"
+                >
+                  {count} {count === 1 ? 'produto ficará' : 'produtos ficarão'} sem categoria
+                  após essa exclusão.
+                </p>
+              )}
+            </div>
+          )
+        })()}
+      </ResponsiveDialog>
     </div>
   )
 }

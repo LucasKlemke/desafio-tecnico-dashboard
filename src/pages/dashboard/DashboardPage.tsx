@@ -2,7 +2,7 @@ import { useMemo, useEffect, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, XAxis, YAxis } from 'recharts'
 import { useAuth } from '@/contexts/AuthContext'
 import { getProducts, type Product } from '@/services/products'
-import { getCategories, type Category } from '@/services/categories'
+import { getCategories } from '@/services/categories'
 import {
   ChartContainer,
   ChartLegend,
@@ -137,14 +137,14 @@ export function DashboardPage() {
   if (loading) return <div className="p-8 text-center">Carregando dashboard...</div>
 
   return (
-    <div className="flex flex-col gap-8 p-6">
+    <div className="flex flex-col gap-8">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground">Visão geral do seu inventário de {user?.name}.</p>
       </div>
 
       {/* Cards de Resumo */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Produtos</CardTitle>
