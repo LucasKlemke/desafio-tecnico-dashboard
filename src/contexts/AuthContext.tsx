@@ -7,8 +7,8 @@ import {
 } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const API_URL = 'http://localhost:3001'
-const STORAGE_KEY = 'auth_session'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const STORAGE_KEY = import.meta.env.VITE_STORAGE_KEY || 'auth_session'
 
 type User = {
   id: string

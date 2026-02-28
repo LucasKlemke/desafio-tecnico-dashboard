@@ -1,73 +1,80 @@
-# React + TypeScript + Vite
+# Dashboard Técnico
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Dashboard responsivo com autenticação de usuários e CRUD completo de produtos e categorias.
 
-Currently, two official plugins are available:
+## Como rodar na sua máquina
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 1. Instalar dependências
 
-## React Compiler
-
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Configurar variáveis de ambiente
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cp .env.example .env
 ```
+
+> O arquivo `.env` já vem configurado para desenvolvimento local. Apenas copie o exemplo.
+
+### 3. Rodar o projeto
+
+```bash
+npm run fullstack
+```
+
+Isso inicia o frontend (porta 5173) e o backend (porta 3001) simultaneamente.
+
+Acesse: [http://localhost:5173](http://localhost:5173)
+
+---
+
+## Testes
+
+### Rodar todos os testes
+
+```bash
+npm test
+```
+
+### Como foram feitos os testes
+
+Os testes cobrem:
+
+1. **Services** (`src/services/__tests__/`)
+   - Testa todas as chamadas à API (produtos e categorias)
+   - Usa `msw` para mockar requisições HTTP
+   - Valida headers, métodos, payloads e respostas
+
+2. **Componentes/Páginas** (`src/pages/dashboard/__tests__/`)
+   - Testa interação do usuário com formulários e tabelas
+   - Valida CRUD completo (criar, editar, deletar)
+   - Usa `@testing-library/react` e `@testing-library/user-event`
+   - Mock de `window.matchMedia` para componentes responsivos
+
+**Bibliotecas:**
+- `vitest` — test runner
+- `@testing-library/react` — renderizar e testar componentes
+- `@testing-library/user-event` — simular interações do usuário
+- `msw` — mock de requisições HTTP
+
+---
+
+## Stack
+
+- React 19 + TypeScript
+- Vite
+- TailwindCSS + shadcn/ui
+- React Router
+- JSON Server (backend simulado)
+- JWT para autenticação
+
+## Funcionalidades
+
+- Autenticação (registro/login) com isolamento de dados por usuário  
+- CRUD de produtos e categorias  
+- Dashboard com gráficos (Recharts)  
+- Responsivo (mobile/tablet/desktop)  
+- Validação de senha com indicador de força  
+- Testes unitários
