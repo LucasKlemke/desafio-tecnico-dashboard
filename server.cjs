@@ -1,9 +1,10 @@
+require('dotenv').config()
 const jsonServer = require('json-server')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
-const SECRET = 'dashboard-secret-key'
-const PORT = 3001
+const SECRET = process.env.JWT_SECRET || 'dashboard-secret-key'
+const PORT = process.env.SERVER_PORT || 3001
 
 const server = jsonServer.create()
 const router = jsonServer.router('db.json')
