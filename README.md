@@ -28,6 +28,10 @@ Isso inicia o frontend (porta 5173) e o backend (porta 3001) simultaneamente.
 
 Acesse: [http://localhost:5173](http://localhost:5173)
 
+**Login para teste:**
+- Email: `admin@email.com`
+- Senha: `admin1234`
+
 ---
 
 ## Testes
